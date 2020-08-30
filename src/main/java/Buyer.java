@@ -45,8 +45,9 @@ public class Buyer extends Thread {
                 Shop.buy(buyProducts);
             }
             operation++;
-            System.out.println("Покупатель " + name + " Операция номер " + getOperation() +
-                    " Куплено " + product);
+            System.out.println("Покупатель " + name
+                    + " Операция номер " + getOperation() +
+                    " Куплено " + buyProducts + " Всего куплено " + product);
             try {
                 START.await();
             } catch (InterruptedException e) {
