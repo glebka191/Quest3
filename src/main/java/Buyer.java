@@ -3,13 +3,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Phaser;
 
-public class Buyer implements Runnable{
+public class Buyer extends Thread {
     private int product = 0;
     private int operation;
     private int name;
+    public static CountDownLatch START;
 
-    public int getName() {
-        return name;
+    public static void setCW(int buyers) {
+        START = new CountDownLatch(buyers);
     }
 
     public Buyer(int product, int operation, int name) {
@@ -26,25 +27,31 @@ public class Buyer implements Runnable{
         return operation;
     }
 
-    public int getRandomOperations(){
-        return (int) (Math.random()*10)+1;
+    public int getRandomOperations() {
+        return (int) (Math.random() * 10) + 1;
     }
 
-    public void run(){
+    public void run() {
         int buyProducts;
-        if (Shop.getProducts()>0){
+        if (Shop.getProducts() > 0) {
+            START.countDown();
             buyProducts = getRandomOperations();
-            if (Shop.getProducts()<buyProducts){
+            if (Shop.getProducts() < buyProducts) {
                 buyProducts = Shop.getProducts();
                 Shop.buy(buyProducts);
                 product += buyProducts;
-            }else {
+            } else {
                 product += buyProducts;
                 Shop.buy(buyProducts);
             }
             operation++;
             System.out.println("Покупатель " + name + " Операция номер " + getOperation() +
-                    " Товара на складе " + Shop.getProducts());
+                    " Куплено " + product);
+            try {
+                START.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
