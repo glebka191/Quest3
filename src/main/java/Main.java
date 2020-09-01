@@ -16,14 +16,6 @@ public class Main{
 
         System.out.println("Начинаем покупки");
 
-        buyersList.forEach(buyer -> {
-            try {
-                buyer.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
             buyersList.forEach(buyer -> System.out.println( "Покупатель номер " + buyer.getName() + " Кол-во покупок " + buyer.getProduct()
                     + " Кол-во операций " + buyer.getOperation()));
         System.out.println("Остаток на складе "+ Shop.getProducts());
