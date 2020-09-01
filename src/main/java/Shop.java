@@ -6,10 +6,6 @@ public class Shop{
     }
 
     public static synchronized int buy(int amountBuy){
-        if (amountBuy >= products){
-            amountBuy = products;
-            products = 0;
-        } else
             products-=amountBuy;
         return amountBuy;
     }

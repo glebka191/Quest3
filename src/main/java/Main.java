@@ -5,7 +5,7 @@ import java.util.concurrent.CountDownLatch;
 public class Main{
     public static void main(String[] args) {
         int people = Integer.parseInt(args[0]);
-        List<Buyer> buyersList = new ArrayList<>();
+        final List<Buyer> buyersList = new ArrayList<>();
         Buyer.setCW(people);
 
         for (int i = 0; i < people; i ++){
@@ -13,18 +13,19 @@ public class Main{
             buyersList.add(buyer);
             buyer.start();
         }
-            System.out.println("Начинаем покупки");
-        System.out.println(Buyer.START.getCount());
-            while (Shop.getProducts()>0){
-                for (Buyer b : buyersList){
-                    b.run();
-                Buyer.START.countDown();
-                }
+
+        System.out.println("Начинаем покупки");
+
+        buyersList.forEach(buyer -> {
+            try {
+                buyer.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            for (Buyer b : buyersList){
-                System.out.println( "Покупатель номер " + b.getName() + " Кол-во покупок " + b.getProduct()
-                        + " Кол-во операций " + b.getOperation());
-            }
+        });
+
+            buyersList.forEach(buyer -> System.out.println( "Покупатель номер " + buyer.getName() + " Кол-во покупок " + buyer.getProduct()
+                    + " Кол-во операций " + buyer.getOperation()));
         System.out.println("Остаток на складе "+ Shop.getProducts());
     }
 }

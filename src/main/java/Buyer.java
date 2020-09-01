@@ -7,10 +7,10 @@ public class Buyer extends Thread {
     private int product = 0;
     private int operation;
     private int name;
-    public static CountDownLatch START;
+    public static CyclicBarrier START;
 
     public static void setCW(int buyers) {
-        START = new CountDownLatch(buyers);
+        START = new CyclicBarrier(buyers);
     }
 
     public Buyer(int product, int operation, int name) {
@@ -33,8 +33,9 @@ public class Buyer extends Thread {
 
     public void run() {
         int buyProducts;
-        if (Shop.getProducts() > 0) {
-            START.countDown();
+        while (Shop.getProducts() > 0) {
+            try {
+                START.await();
             buyProducts = getRandomOperations();
             if (Shop.getProducts() < buyProducts) {
                 buyProducts = Shop.getProducts();
@@ -48,11 +49,12 @@ public class Buyer extends Thread {
             System.out.println("Покупатель " + name
                     + " Операция номер " + getOperation() +
                     " Куплено " + buyProducts + " Всего куплено " + product);
-            try {
-                START.await();
+            START.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (BrokenBarrierException e) {
+                e.printStackTrace();
             }
-        }
+            }
     }
 }
